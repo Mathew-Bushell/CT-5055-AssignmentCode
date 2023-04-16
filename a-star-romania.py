@@ -93,8 +93,8 @@ def build_graph_weighted(file):
             graph[v1] = []
         if v2 not in graph:
             graph[v2] = []
-        graph[v1].append((v2,w))
-        graph[v2].append((v1,w))
+        graph[v1].append((v2, w))
+        graph[v2].append((v1, w))
     return graph
 
 
