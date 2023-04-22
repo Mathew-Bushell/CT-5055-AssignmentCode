@@ -121,7 +121,6 @@ while targetFound != True:
             L1x = city[1]
             L1y = city[2]
             L1y = L1y.replace("\n", "")
-
             targetFound =True
             break
 
