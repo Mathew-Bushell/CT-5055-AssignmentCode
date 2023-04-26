@@ -99,20 +99,35 @@ plt.show()
 
 
 while True:
-    try:
-        filePath = input("Paste the file path of the image you want to test here: ")
-        if os.path.exists(filePath):
-            img = tf.keras.utils.load_img(filePath, target_size = (imgHeight, imgWidth))
-            imgArray = tf.keras.utils.img_to_array(img)
-            imgArray = tf.expand_dims(imgArray, 0)#creates a batch
+    # try:
+    #     filePath = input("Paste the file path of the image you want to test here: ")
+    #     if os.path.exists(filePath):
+    #         img = tf.keras.utils.load_img(filePath, target_size = (imgHeight, imgWidth))
+    #         imgArray = tf.keras.utils.img_to_array(img)
+    #         imgArray = tf.expand_dims(imgArray, 0)#creates a batch
+    #
+    #         predictions = model.predict(imgArray)
+    #         score = tf.nn.softmax(predictions[0])
+    #
+    #         print("This image most likely belongs to " + classNames[np.argmax(score)]+" with a "+(100 * np.max(score))+" percent confidence.")
+    #     elif filePath == "Q":
+    #         break
+    #     else:
+    #         print("This file path does not exist")
+    # except:
+    #     print("invalid input")
+    filePath = input("Paste the file path of the image you want to test here: ")
+    if os.path.exists(filePath):
+        img = tf.keras.utils.load_img(filePath, target_size = (imgHeight, imgWidth))
+        imgArray = tf.keras.utils.img_to_array(img)
+        imgArray = tf.expand_dims(imgArray, 0)#creates a batch
 
-            predictions = model.predict(imgArray)
-            score = tf.nn.softmax(predictions[0])
+        predictions = model.predict(imgArray)
+        score = tf.nn.softmax(predictions[0])
+        confidenceScore = (100 * np.max(score))
+        print("This image most likely belongs to " + classNames[np.argmax(score)]+" with a "+ str(confidenceScore) +" percent confidence.")
+    elif filePath == "Q":
+        break
+    else:
+        print("This file path does not exist")
 
-            print("This image most likely belongs to " + classNames[np.argmax(score)]+" with a "+(100 * np.max(score))+" percent confidence.")
-        elif filePath == "Q":
-            break
-        else:
-            print("This file path does not exist")
-    except:
-        print("invalid input")
