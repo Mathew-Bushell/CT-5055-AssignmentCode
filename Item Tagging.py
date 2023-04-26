@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import PIL
 import tensorflow as tf
-
+import os
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
@@ -97,14 +97,22 @@ plt.legend(loc='upper right')
 plt.title('Training and Validation Loss')
 plt.show()
 
-img = tf.keras.utils.load_img("Subset_of_posted_Items/test/pants/2884d941-ccc9-4eac-b7d7-b9996126a9c8.jpg", target_size = (imgHeight, imgWidth))
-imgArray = tf.keras.utils.img_to_array(img)
-imgArray = tf.expand_dims(imgArray, 0)#creates a batch
 
-predictions = model.predict(imgArray)
-score = tf.nn.softmax(predictions[0])
+while True:
+    try:
+        filePath = input("Paste the file path of the image you want to test here: ")
+        if os.path.exists(filePath):
+            img = tf.keras.utils.load_img(filePath, target_size = (imgHeight, imgWidth))
+            imgArray = tf.keras.utils.img_to_array(img)
+            imgArray = tf.expand_dims(imgArray, 0)#creates a batch
 
-print(
-    "This image most likely belongs to {} with a {:.2f} percent confidence."
-    .format(classNames[np.argmax(score)], 100 * np.max(score))
-)
+            predictions = model.predict(imgArray)
+            score = tf.nn.softmax(predictions[0])
+
+            print("This image most likely belongs to " + classNames[np.argmax(score)]+" with a "+(100 * np.max(score))+" percent confidence.")
+        elif filePath == "Q":
+            break
+        else:
+            print("This file path does not exist")
+    except:
+        print("invalid input")
