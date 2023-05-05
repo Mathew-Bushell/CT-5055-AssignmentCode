@@ -4,54 +4,24 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
+from tensorflow.keras import layers
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 
-def verifymissing():
-    file = open("buying_history.csv", "r")
-    file = file.readlines()
-    lastYear = "2009"
-    lastMonth = "12"
-    for line in file:
-
-        if line == "Year; Month;ItemsBought\n":
-
-            continue
-        else:
-            line = line.replace("\n", "")
-            line = line.split(";")
-            if lastMonth == "12":
-                lastMonth = "0"
-            print(lastYear+";"+lastMonth+">"+line[0]+";"+line[1])
-            if int(line[1]) == (int(lastMonth) + 1):
-                print("Month good")
-
-                if int(line[0]) == (int(lastYear) + 1) and lastMonth == "0":
-                    print("NextYear good")
-                    lastMonth = line[1]
-                    lastYear = line[0]
-                elif (line[0] == lastYear):
-                    print("Same Year good")
-                    lastMonth = line[1]
-                else:
-                    print("Year Bad")
-            else:
-                print("Month Bad")
 
 def modelTrain():
     # unpacks and formats the dataset, sorts it into date and items brought
     buyHistory = pd.read_csv("buying_history.csv")
     date = []
     trainingCount=[]
-    validationCount=[]
+    buyCount=[]
     info = buyHistory['Year;Month;ItemsBought'].tolist()
     for i in info:
         row = i.split(";")
         date.append(row[0]+"-"+row[1])
         trainingCount.append(row[2])
-        validationCount.append(row[2])
-    # date = pd.to_datetime(date, format='%Y-%m')
+        buyCount.append(row[2])
     trainData = {'Brought': trainingCount}
     trainingFrame = pd.DataFrame(data=trainingCount)
     # print(trainingFrame)
@@ -75,6 +45,10 @@ def modelTrain():
     trainingX = np.reshape(trainingX, (trainingX.shape[0], 1, trainingX.shape[1]))
     validationX = np.reshape(validationX, (validationX.shape[0], 1, validationX.shape[1]))
 
+    embedding = layers.Embedding(input_dim=5000, output_dim=16, mask_zero=True)
+    trainingMask = embedding(trainingX)
+    validationMask= embedding(validationX)
+
     # create and fit the LSTM network
     model = Sequential()
     model.add(LSTM(4, input_shape=(1, lookBack)))
@@ -96,19 +70,34 @@ def modelTrain():
     testScore = np.sqrt(mean_squared_error(testY[0], testPredict[:, 0]))
     print('Test Score: %.2f RMSE' % (testScore))
 
-    # shift train predictions for plotting
-    trainPredictPlot = np.empty_like(trainingSet)
-    trainPredictPlot[:, :] = np.nan
-    trainPredictPlot[lookBack:len(trainPredict) + lookBack, :] = trainPredict
-    # shift test predictions for plotting
-    testPredictPlot = np.empty_like(trainingSet)
-    testPredictPlot[:, :] = np.nan
-    testPredictPlot[len(trainPredict) + (lookBack * 2) + 1:len(trainingSet) - 1, :] = testPredict
-    # plot baseline and predictions
-    plt.plot(scaler.inverse_transform(trainingSet))
-    plt.plot(trainPredictPlot)
-    plt.plot(testPredictPlot)
-    plt.show()
+    # # shift train predictions for plotting
+    # trainPredictPlot = np.empty_like(trainingSet)
+    # trainPredictPlot[:, :] = np.nan
+    # trainPredictPlot[lookBack:len(trainPredict) + lookBack, :] = trainPredict
+    # # shift test predictions for plotting
+    # testPredictPlot = np.empty_like(trainingSet)
+    # testPredictPlot[:, :] = np.nan
+    # testPredictPlot[len(trainPredict) + (lookBack * 2) + 1:len(trainingSet) - 1, :] = testPredict
+    # # plot baseline and predictions
+    # plt.plot(scaler.inverse_transform(trainingSet))
+    # plt.plot(trainPredictPlot)
+    # plt.plot(testPredictPlot)
+    # plt.show()
+    print(type(trainPredict[5]))
+    trainPredict = trainPredict.tolist()
+    testPredict = testPredict.tolist()
+    FullPredict = trainPredict+testPredict
+    for x in range(len(buyCount)):
+        try:
+            if buyCount[x] == "0":
+                replacement = FullPredict[x]
+                replacement = str(round(replacement[0], 0))
+                buyCount[x] = replacement
+        except:
+            break
+    print("The recovered data is:")
+    for y in buyCount:
+        print(y)
 
 def createDataset(dataset, lookBack=1):
     dataX = []
