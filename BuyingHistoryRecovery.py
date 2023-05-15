@@ -70,19 +70,19 @@ def modelTrain():
     testScore = np.sqrt(mean_squared_error(testY[0], testPredict[:, 0]))
     print('Test Score: %.2f RMSE' % (testScore))
 
-    # # shift train predictions for plotting
-    # trainPredictPlot = np.empty_like(trainingSet)
-    # trainPredictPlot[:, :] = np.nan
-    # trainPredictPlot[lookBack:len(trainPredict) + lookBack, :] = trainPredict
-    # # shift test predictions for plotting
-    # testPredictPlot = np.empty_like(trainingSet)
-    # testPredictPlot[:, :] = np.nan
-    # testPredictPlot[len(trainPredict) + (lookBack * 2) + 1:len(trainingSet) - 1, :] = testPredict
-    # # plot baseline and predictions
-    # plt.plot(scaler.inverse_transform(trainingSet))
-    # plt.plot(trainPredictPlot)
-    # plt.plot(testPredictPlot)
-    # plt.show()
+    # shift train predictions for plotting
+    trainPredictPlot = np.empty_like(trainingSet)
+    trainPredictPlot[:, :] = np.nan
+    trainPredictPlot[lookBack:len(trainPredict) + lookBack, :] = trainPredict
+    # shift test predictions for plotting
+    testPredictPlot = np.empty_like(trainingSet)
+    testPredictPlot[:, :] = np.nan
+    testPredictPlot[len(trainPredict) + (lookBack * 2) + 1:len(trainingSet) - 1, :] = testPredict
+    # plot baseline and predictions
+    plt.plot(scaler.inverse_transform(trainingSet))
+    plt.plot(trainPredictPlot)
+    plt.plot(testPredictPlot)
+    plt.show()
     print(type(trainPredict[5]))
     trainPredict = trainPredict.tolist()
     testPredict = testPredict.tolist()

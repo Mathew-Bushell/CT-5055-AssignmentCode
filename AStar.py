@@ -125,7 +125,7 @@ while targetFound != True:
             break
 
 for startCity in cities:
-    startCity = startCity.replace("\n","")
+    startCity = startCity.replace("\n", "")
     citySplit = startCity.split(";")
 
 
